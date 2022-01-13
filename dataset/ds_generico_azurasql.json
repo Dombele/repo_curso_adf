@@ -1,0 +1,58 @@
+{
+	"name": "ds_generico_azurasql",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azuresql",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schemaName": {
+				"type": "string"
+			},
+			"tableName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "IDENDERECO",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "RUA",
+				"type": "varchar"
+			},
+			{
+				"name": "CIDADE",
+				"type": "varchar"
+			},
+			{
+				"name": "ESTADO",
+				"type": "varchar"
+			},
+			{
+				"name": "REGIAO",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_CLIENTE",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

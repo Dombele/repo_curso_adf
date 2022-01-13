@@ -1,0 +1,159 @@
+{
+	"name": "pipe_lookup",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup_csv",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "ds_gerico_csv",
+						"type": "DatasetReference",
+						"parameters": {
+							"containerName": "csvfilesforjob",
+							"fileName": "csvCor.csv",
+							"separatorName": ";"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Lookup_sql",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Lookup_csv",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generico_azurasql",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaName": "dbo",
+							"tableName": "produto"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Lookup_query",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Lookup_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT TABLE_SCHEMA, TABLE_NAME\n      FROM INFORMATION_SCHEMA. TABLES\n            WHERE TABLE_TYPE= 'BASE TABLE'\n              and TABLE_SCHEMA = 'dbo'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generico_azurasql",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaName": "dbo",
+							"tableName": "Cliente"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Lookup_procedure",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Lookup_query",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[proc_lookup_adf]",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_generico_azurasql",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaName": "dbo",
+							"tableName": "ENDERECO"
+						}
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"folder": {
+			"name": "adf_02_activities"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-12-30T11:38:07Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

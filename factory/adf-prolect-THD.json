@@ -1,0 +1,9 @@
+{
+	"name": "adf-prolect-THD",
+	"location": "eastus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1f7a7a6e-977a-4ac1-a6de-308dccbc2078",
+		"tenantId": "ad0b0c22-288a-4312-b48c-968a10dd7177"
+	}
+}
